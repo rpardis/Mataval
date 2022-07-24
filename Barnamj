@@ -1,0 +1,58 @@
+% Kode MATLAB tashkhis yek SHEI az yek AX
+% Reza Pardis 1401-05-02
+
+clear,clc,close all;
+SHEI3=imread('nmad6.bmp');
+AX0=imread('matn7.bmp');
+Astan=.3;
+roshanaeedowr=206;
+
+AX=double(AX0);
+
+m=uint8(255);
+SHEI=m-SHEI3;
+
+[xAX,yAX]=size(AX);
+[xf,yf]=size(SHEI);
+f0=SHEI;
+xss=xAX-xf+1;yss=yAX-yf+1;
+AXxt=zeros(xss,yss);
+for nx=1:xss
+    for ny=1:yss
+        f0(:,:)=AX(nx:nx+xf-1,ny:ny+yf-1);
+        f1=f0.*SHEI;
+        f2=sum(sum(f1));
+        AXxt(nx,ny)=f2;
+    end
+end
+mms=max(max(AXxt));
+AXxt2=AXxt./mms*255;
+AXxt1=uint8(AXxt2);
+
+AXxt3=uint8((AXxt2>255*Astan)*255);
+
+%%%%%%%%%%%%%
+ee=find(AXxt3==0);
+[t6,t7]=size(AXxt3);
+eee(:,2)=round(ee/t6);
+eee(:,1)=mod(ee,t6);
+[xeee,yeee]=size(eee);
+ywe=t7-eee(:,1);
+xwe=eee(:,2);
+%%%%%%%%%%%
+
+ci=round(min(size(SHEI3))/2)+10;
+F=zeros(ci*2,ci*2);
+F(3:2*ci-3,3:2*ci-3)=1;
+[xF,yF]=size(F);
+G=AX.*0+1;
+lee=length(ee);
+for nn=1:lee
+    xx=eee(nn,1);yy=eee(nn,2);
+    G(xx:xx+xF-1,yy:yy+yF-1)=F(:,:);
+end
+H=uint8(G.*AX+roshanaeedowr*(1-G));
+figure(4)
+imshow(H)
+sy=sprintf('With Astaneh= %g, %G points detected',Astan,lee);
+title(sy)
